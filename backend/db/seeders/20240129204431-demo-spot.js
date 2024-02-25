@@ -87,7 +87,7 @@ module.exports = {
         lat: 90,
         lng: -180,
         name: 'Nokron, Eternal City',
-        description: 'The Nokron, Eternal City region is a sprawling city ruin located a level above the Siofra River. Much like the Siofra River, this underground region has features that you could mistake for an overland area - the fauna, growing vegetation, and a sky seemingly filled with stars. It is an ancient city punished for high treason against the Greater Will',
+        description: 'The Nokron, Eternal City region is a sprawling city ruin located a level above the Siofra River.',
         price: 500.99
       },
       {
@@ -99,7 +99,7 @@ module.exports = {
         lat: 49,
         lng: -105,
         name: 'Academy of Raya Lucaria',
-        description: 'The Academy of Raya Lucaria sits in the middle of the great lake of Liurnia, and is the place of study for Glintstone Sorcerers. Long ago, Rennala charmed the Academy with her lunar magic. She became the Academy\'s master and established the house of Caria as royalty. However, when Rennala\'s husband Radagon left her to become the second Elden Lord, Rennala\'s heart went along with him. Those at the Academy then realised that Rennala was no champion, and she was confined to the great library. She still clutches the amber egg given to her by Radagon, which contains the Great Rune of the Unborn.',
+        description: 'The Academy of Raya Lucaria sits in the middle of the great lake of Liurnia, and is the place of study for Glintstone Sorcerers.',
         price: 230
       },
     ], options, { validate: true})
