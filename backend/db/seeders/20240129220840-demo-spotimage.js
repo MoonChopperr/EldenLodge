@@ -168,11 +168,6 @@ module.exports = {
         url: 'https://res.cloudinary.com/dxdktlvbj/image/upload/v1708448754/ELDEN%20LOUNGE/Nokron%20Eternal%20City/Nokron-Eternal-City-Featured-Image-v2_y5dqt5.jpg',
         preview: true
       },
-      {
-        spotId: 7,
-        url: 'https://imgur.com/a/t1ZFjxZ',
-        preview: true
-      },
 
     ], options, { validate: true})
   },

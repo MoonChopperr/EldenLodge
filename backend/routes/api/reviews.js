@@ -13,8 +13,9 @@ const validateReviews = [
     .exists({ checkFalsy: true })
     .withMessage("Review text is required"),
     check('stars')
-    .isInt({ min: 1, max: 5 })
-    .withMessage("Stars must be an integer from 1 to 5"),
+    .exists({ checkFalsy: true })
+    .withMessage("Stars must be an integer from 1 to 5")
+    .isInt({ min: 1, max: 5 }),
     handleValidationErrors
 ]
 
@@ -51,21 +52,10 @@ router.get("/current", requireAuth, async (req, res) => {
     for (let i = 0; i < reviews.length; i++) {
         let json = reviews[i].toJSON();
         let spotURL = json.Spot.SpotImages[0]
-
-
         if (spotURL) {
             json.Spot.previewImage = spotURL.url
         } else {
             json.Spot.previewImage = null
-        }
-        if(json.Spot.lat){
-            json.Spot.lat = parseFloat(json.Spot.lat)
-        }
-        if(json.Spot.lng){
-            json.Spot.lng = parseFloat(json.Spot.lng)
-        }
-        if(json.Spot.price){
-            json.Spot.price = parseFloat(json.Spot.price)
         }
         //deletes url
         delete json.Spot.SpotImages
@@ -92,7 +82,7 @@ router.post('/:reviewId/images', requireAuth, async (req, res) => {
 
     if (req.user.id !== review.userId) {
         res.status(403).json({
-            message: "Forbidden"
+            message: "Review must belong to the current user"
         })
     }
     //findall instead of findone
@@ -102,7 +92,7 @@ router.post('/:reviewId/images', requireAuth, async (req, res) => {
         }
     })
 
-    if (existImg.length >= 10) {
+    if (existImg.length > 10) {
         return res.status(403).json({
             message: "Maximum number of images for this resource was reached"
         })
@@ -134,7 +124,7 @@ router.put('/:reviewId', [requireAuth, validateReviews], async (req, res) => {
 
     if (req.user.id !== reviewspot.userId) {
         return res.status(403).json({
-            message: "Forbidden"
+            message: "Review must belong to the current user"
         })
     }
 
@@ -165,11 +155,11 @@ router.delete('/:reviewId', requireAuth, async (req, res) => {
 
     if (req.user.id !== review.userId) {
         return res.status(403).json({
-            message: "Forbidden"
+            message: "Review must belong to the current user"
         })
     }
 
-    await review.destroy()
+    review.destroy()
 
     res.status(200).json({
         message: "Successfully deleted"
