@@ -168,6 +168,31 @@ module.exports = {
         url: 'https://res.cloudinary.com/dxdktlvbj/image/upload/v1708448754/ELDEN%20LOUNGE/Nokron%20Eternal%20City/Nokron-Eternal-City-Featured-Image-v2_y5dqt5.jpg',
         preview: true
       },
+      {
+        spotId:7,
+        url: 'https://res.cloudinary.com/dxdktlvbj/image/upload/v1708538334/ELDEN%20LOUNGE/Academy%20of%20Raya%20Lucaria/latest_gnrrws.png',
+        preview: true,
+      },
+      {
+        spotId:7,
+        url: 'https://res.cloudinary.com/dxdktlvbj/image/upload/v1708538348/ELDEN%20LOUNGE/Academy%20of%20Raya%20Lucaria/Academy-of-Raya-Lucaria-Walkthrough-Featured-Image_in4w84.jpg',
+        preview: true,
+      },
+      {
+        spotId:7,
+        url: 'https://res.cloudinary.com/dxdktlvbj/image/upload/v1708538450/ELDEN%20LOUNGE/Academy%20of%20Raya%20Lucaria/screenshot-i-took-inside-the-academy-of-raya-lucaria-such-a-v0-xiid7wbo5on81_pztihr.jpg',
+        preview: true,
+      },
+      {
+        spotId:7,
+        url: 'https://res.cloudinary.com/dxdktlvbj/image/upload/v1708538362/ELDEN%20LOUNGE/Academy%20of%20Raya%20Lucaria/academy-of-raya-lucaria-v0-23ub99908qra1_qisudo.jpg',
+        preview: true,
+      },
+      {
+        spotId:7,
+        url: 'https://res.cloudinary.com/dxdktlvbj/image/upload/v1708538369/ELDEN%20LOUNGE/Academy%20of%20Raya%20Lucaria/elden_ring___academy_of_raya_lucaria_by_darkrosepassions_df1d9mg-fullview.jpg_eoucpt.jpg',
+        preview: true,
+      },
 
     ], options, { validate: true})
   },

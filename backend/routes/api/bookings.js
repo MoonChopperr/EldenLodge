@@ -7,27 +7,27 @@ const { check } = require('express-validator');
 
 const router = express.Router()
 
-const validateDates = [
-    check('startDate')
-        .exists({ checkFalsy: true })
-        .custom((val, { req }) => {
-            const currentDate = new Date()
-            if (new Date(val) < currentDate) {
-                throw new Error("StartDate cannot be in the past")
-            }
-            return true
-        }),
-    check('endDate')
-        .exists({ checkFalsy: true })
-        .custom((val, { req }) => {
-            const startDate = new Date(req.body.startDate)
-            if (new Date(val) <= startDate) {
-                throw new Error("endDate cannot be on or before startDate")
-            }
-            return true
-        }),
-    handleValidationErrors
-]
+// const validateDates = [
+//     check('startDate')
+//         .exists({ checkFalsy: true })
+//         .custom((val, { req }) => {
+//             const currentDate = new Date()
+//             if (new Date(val) < currentDate) {
+//                 throw new Error("StartDate cannot be in the past")
+//             }
+//             return true
+//         }),
+//     check('endDate')
+//         .exists({ checkFalsy: true })
+//         .custom((val, { req }) => {
+//             const startDate = new Date(req.body.startDate)
+//             if (new Date(val) <= startDate) {
+//                 throw new Error("endDate cannot be on or before startDate")
+//             }
+//             return true
+//         }),
+//     handleValidationErrors
+// ]
 
 //Get all current User's Bookings
 router.get('/current', requireAuth, async (req, res) => {
@@ -64,6 +64,20 @@ router.get('/current', requireAuth, async (req, res) => {
             json.Spot.previewImage = null
         }
 
+        if (json.Spot.lat) {
+            json.Spot.lat = parseFloat(json.Spot.lat)
+        }
+
+
+        if (json.Spot.lng) {
+            json.Spot.lng = parseFloat(json.Spot.lng)
+        }
+
+
+        if (json.Spot.price) {
+            json.Spot.price = parseFloat(json.Spot.price)
+        }
+
         bookings[i] = json
     }
 
@@ -74,7 +88,7 @@ router.get('/current', requireAuth, async (req, res) => {
 
 
 //edit a booking
-router.put('/:bookingId', [requireAuth, validateDates], async (req, res) => {
+router.put('/:bookingId', requireAuth, async (req, res) => {
     const { bookingId } = req.params
     const { startDate, endDate } = req.body
     const bookings = await Booking.findByPk(bookingId)
@@ -93,6 +107,23 @@ router.put('/:bookingId', [requireAuth, validateDates], async (req, res) => {
         })
     }
 
+    if (new Date(startDate) < currentDate) {
+        return res.status(400).json({
+            message: "Bad Request",
+            errors: {
+                startDate: "startDate cannot be in the past"
+            }
+        })
+    }
+
+    if (new Date(endDate) <= new Date(startDate)) {
+        return res.status(400).json({
+            message: "Bad Request",
+            errors: {
+                endDate: "endDate cannot be on or before startDate"
+            }
+        })
+    }
     //if already booked for specified dates
     const existBooking = await Booking.findOne({
         where: {
@@ -100,16 +131,16 @@ router.put('/:bookingId', [requireAuth, validateDates], async (req, res) => {
                 [Op.ne]: bookingId
             },
             spotId: bookings.spotId,
-            [Op.or]:
+            [Op.and]:
                 [
                     {
                         startDate: {
-                            [Op.between]: [startDate, endDate]
+                            [Op.lte]: new Date(endDate)
                         }
                     },
                     {
                         endDate: {
-                            [Op.between]: [startDate, endDate]
+                            [Op.gte]: new Date(startDate)
                         }
                     }
                 ]
@@ -123,6 +154,13 @@ router.put('/:bookingId', [requireAuth, validateDates], async (req, res) => {
                 startDate: "Start date conflicts with an existing booking",
                 endDate: "End date conflicts with an existing booking"
             }
+        })
+    }
+
+
+    if (req.user.id !== bookings.userId) {
+        return res.status(403).json({
+            message: "Forbidden"
         })
     }
 
@@ -145,13 +183,13 @@ router.delete('/:bookingId', requireAuth, async (req, res) => {
         })
     }
 
-    if(bookings.userId !== req.user.id){
+    if (bookings.userId !== req.user.id) {
         return res.status(403).json({
-            message: "Booking must belong to the current user or the Spot must belong to the current user"
+            message: "Forbidden"
         })
     }
 
-    if(new Date(bookings.startDate)<= new Date()){
+    if (new Date(bookings.startDate) <= new Date()) {
         return res.status(403).json({
             message: "Bookings that have been started can't be deleted"
         })
