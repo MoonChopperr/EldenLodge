@@ -2,7 +2,7 @@ const express = require('express')
 const { Spot, SpotImage, Review, User, Booking, ReviewImage } = require('../../db/models')
 const { requireAuth, restoreUser } = require('../../utils/auth');
 const { handleValidationErrors } = require('../../utils/validation')
-const { Op } = require('sequelize');
+const { Op, UnknownConstraintError } = require('sequelize');
 const { check, query } = require('express-validator');
 
 const router = express.Router()
@@ -10,23 +10,15 @@ const router = express.Router()
 const validateSpots = [
     check('address')
         .exists({ checkFalsy: true })
-        .isString()
-        .notEmpty()
-        .withMessage('Street Address required'),
+        .withMessage('Street Address is required'),
     check('city')
         .exists({ checkFalsy: true })
-        .isString()
-        .notEmpty()
         .withMessage('City is required'),
     check('state')
         .exists({ checkFalsy: true })
-        .isString()
-        .notEmpty()
         .withMessage('State is required'),
     check('country')
         .exists({ checkFalsy: true })
-        .isString()
-        .notEmpty()
         .withMessage('Country is required'),
     // check('lat')
     //     .isFloat({ min: -90, max: 90 })
@@ -35,18 +27,13 @@ const validateSpots = [
     //     .isFloat({ min: -180, max: 180 })
     //     .withMessage("Longitude must be within -180 and 180"),
     check('name')
-        .isLength({ max: 49 })
-        .isString()
-        .notEmpty()
+        .isLength({ max: 50 })
         .withMessage("Name must be less than 50 characters"),
     check('description')
         .exists({ checkFalsy: true })
-        .isString()
-        .notEmpty()
         .withMessage("Description is required"),
     check('price')
         .isFloat({ min: 0 })
-        .notEmpty()
         .withMessage("Price per day must be a positive number"),
     handleValidationErrors
 ]
@@ -56,7 +43,6 @@ const validateReviews = [
         .exists({ checkFalsy: true })
         .withMessage("Review text is required"),
     check('stars')
-        .exists({ checkFalsy: true })
         .isInt({ min: 1, max: 5 })
         .withMessage("Stars must be an integer from 1 to 5"),
     handleValidationErrors
@@ -162,7 +148,15 @@ router.get('/current', requireAuth, async (req, res) => {
         } else {
             spots[i].setDataValue('previewImage', imgurl.url)
         }
-
+        if (spots[i].lat) {
+            spots[i].setDataValue('lat', parseFloat(spots[i].lat))
+        }
+        if (spots[i].lng) {
+            spots[i].setDataValue('lng', parseFloat(spots[i].lng))
+        }
+        if (spots[i].price) {
+            spots[i].setDataValue('price', parseFloat(spots[i].price))
+        }
     }
 
     res.json({
@@ -197,7 +191,9 @@ router.get('/:spotId/reviews', async (req, res) => {
         ]
     })
 
-    res.json(allReviews)
+    res.json({
+        Reviews: allReviews
+    })
 })
 
 //create a review
@@ -233,7 +229,7 @@ router.post('/:spotId/reviews', [requireAuth, validateReviews], async (req, res)
         stars
     })
     // console.log('should be an integer', post)
-    res.status(200).json(post)
+    res.status(201).json(post)
 })
 
 
@@ -299,8 +295,8 @@ router.post('/:spotId/bookings', [requireAuth, validateDates], async (req, res) 
 
     //if owner of spot
     if (req.user.id === spot.ownerId) {
-        return res.status(418).json({
-            message: "Spot must NOT belong to the current user"
+        return res.status(403).json({
+            message: "Forbidden"
         })
     }
 
@@ -308,16 +304,16 @@ router.post('/:spotId/bookings', [requireAuth, validateDates], async (req, res) 
     const existBooking = await Booking.findOne({
         where: {
             spotId: spotId,
-            [Op.or]:
+            [Op.and]:
                 [
                     {
                         startDate: {
-                            [Op.between]: [startDate, endDate]
+                            [Op.lte]: new Date(endDate)
                         }
                     },
                     {
                         endDate: {
-                            [Op.between]: [startDate, endDate]
+                            [Op.gte]: new Date(startDate)
                         }
                     }
                 ]
@@ -358,7 +354,7 @@ router.post('/:spotId/images', requireAuth, async (req, res) => {
     //proper auth
     if (req.user.id !== spotId.ownerId) {
         return res.status(403).json({
-            message: "Spot must belong to the current user"
+            message: "Forbidden"
         })
     }
 
@@ -368,7 +364,11 @@ router.post('/:spotId/images', requireAuth, async (req, res) => {
         preview,
     })
 
-    res.json(spotImage)
+    res.json({
+        id: spotImage.id,
+        url: spotImage.url,
+        preview: spotImage.preview
+    })
 })
 
 // Get Spot details by ID
@@ -417,6 +417,10 @@ router.get('/:spotId', async (req, res) => {
     spot.setDataValue('avgStarRating', avgRating)
     spot.setDataValue('SpotImages', imgurl)
     spot.setDataValue('Owner', owner)
+    if (spot.lat) spot.lat = parseFloat(spot.lat)
+    if (spot.lng) spot.lng = parseFloat(spot.lng)
+    if (spot.price) spot.price = parseFloat(spot.price)
+
 
     res.json(spot)
 })
@@ -437,7 +441,7 @@ router.put('/:spotId', [requireAuth, validateSpots], async (req, res) => {
     //proper auth
     if (req.user.id !== spot.ownerId) {
         return res.status(403).json({
-            message: "Spot must belong to the current user"
+            message: "Forbidden"
         })
     }
 
@@ -490,7 +494,7 @@ router.delete('/:spotId', requireAuth, async (req, res) => {
     //proper auth
     if (req.user.id !== spot.ownerId) {
         return res.status(403).json({
-            "message": "Spot must belong to the current user"
+            message: "Forbidden"
         })
     }
 
@@ -519,7 +523,11 @@ router.post('/', [requireAuth, validateSpots], async (req, res) => {
         price
     })
 
-    res.json(spot)
+    if (spot.lat) spot.lat = parseFloat(lat)
+    if (spot.lng) spot.lng = parseFloat(lng)
+    if (spot.price) spot.price = parseFloat(price)
+
+    res.status(201).json(spot)
 
 })
 
@@ -528,6 +536,11 @@ router.post('/', [requireAuth, validateSpots], async (req, res) => {
 router.get('/', validateQueryFilters, async (req, res) => {
     let { page, size, maxLat, minLat, minLng, maxLng, minPrice, maxPrice } = req.query
     let pagination = {}
+    const queryObj = {
+        where: {
+
+        }
+    }
     if (!page) page = 1
     if (!size) size = 20
     if (page > 10) page = 10
@@ -541,8 +554,41 @@ router.get('/', validateQueryFilters, async (req, res) => {
         delete pagination.size
     }
 
+    if (minLat) {
+        queryObj.where.lat = { [Op.gte]: minLat }
+    }
+
+    if (maxLat) {
+        queryObj.where.lat = { [Op.lte]: maxLat }
+    }
+
+    if (minLat && maxLat) {
+        queryObj.where.lat = { [Op.between]: [minLat, maxLat] }
+    }
+
+    if (minLng) {
+        queryObj.where.lng = { [Op.gte]: minLng }
+    }
+
+    if (maxLng) {
+        queryObj.where.lng = { [Op.lte]: maxLng }
+    }
+
+    if (minLng && maxLng) {
+        queryObj.where.lng = { [Op.between]: [minLng, maxLng] }
+    }
+
+    if (minPrice) {
+        queryObj.where.price = { [Op.gte]: minPrice }
+    }
+
+    if (maxPrice) {
+        queryObj.where.price = { [Op.lte]: maxPrice }
+    }
+
     const spots = await Spot.findAll({
-        ...pagination
+        ...pagination,
+        ...queryObj
     })
     //avgstarrating
     let avgRating
@@ -572,13 +618,25 @@ router.get('/', validateQueryFilters, async (req, res) => {
             }
         })
 
-        if (imgurl === null) {
+        if (!imgurl) {
             spots[i].setDataValue('previewImage', null)
         } else {
             spots[i].setDataValue('previewImage', imgurl.url)
         }
 
+        if (spots[i].lat) {
+            spots[i].setDataValue('lat', parseFloat(spots[i].lat))
+        }
+        if (spots[i].lng) {
+            spots[i].setDataValue('lng', parseFloat(spots[i].lng))
+        }
+        if (spots[i].price) {
+            spots[i].setDataValue('price', parseFloat(spots[i].price))
+        }
     }
+
+
+
 
     res.json({
         Spots: spots,
