@@ -73,7 +73,7 @@ const reviewsReducer = (state = {}, action) => {
     switch (action.type) {
         case ALL_REVIEWS: {
             const newState = {}
-            action.reviews.forEach((review) => (newState[review.id] = review))
+            action.reviews.Reviews.forEach((review) => (newState[review.id] = review))
             return newState
         }
         case CREATE_REVIEW: {

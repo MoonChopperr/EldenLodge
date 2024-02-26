@@ -37,7 +37,7 @@ const UpdateSpot = () => {
     // console.log('spotsImgArr', spotImagesArray)
     console.log('spot=>', spot?.SpotImages)
 
-    console.log(setImg1,setImg2,setImg3,setImg4)
+    console.log(setImg0,setImg1,setImg2,setImg3,setImg4)
 
     // useEffect(() => {
     //     setImg0(spot?.SpotImages[0]?.url)
@@ -239,12 +239,12 @@ const UpdateSpot = () => {
                             {submitted && 'price' in validations && (<p>{validations.price}</p>)}
                         </div>
                         <hr className='Section-line' />
-                        <div className='Section5'>
+                        {/* <div className='Section5'>
                             <h2>Liven up your spot with photos</h2>
                             <p className='Form-desc'>Submit a link to at least one photo to publish your spot.</p>
                                 {spot.SpotImages.map((spotimg) => (
                                     <input key={spotimg.url} className='Input-rest' type='text' name='img0' placeholder='Preview Image URL' value={spotimg.url} onChange={(e) => setImg0(e.target.value)}></input>
-                                ))}
+                                ))} */}
 
                             {/* <input className='Input-rest' type='text' name='img0' placeholder='Preview Image URL' value={img0} onChange={(e) => setImg0(e.target.value)}></input>
                         <div className='Form-errors'>
@@ -266,7 +266,7 @@ const UpdateSpot = () => {
                         <div className='Form-errors'>
                             {submitted && 'img4' in validations && (<p>{validations.img4}</p>)}
                         </div> */}
-                        </div>
+                        {/* </div> */}
                         {/* <hr className='Section-line' /> */}
                         <div className='Submit-button'>
                             <button className='Submit-btn' type="submit">Update your Spot</button>
