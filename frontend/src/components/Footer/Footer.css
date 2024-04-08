@@ -1,0 +1,24 @@
+.footer {
+    background-color: rgba(218, 165, 32, 0.979);
+    padding: 1rem;
+    text-align: center;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: space-around;
+}
+
+.footer-links a {
+    color: #333;
+    text-decoration: none;
+    margin-right: 15px;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
