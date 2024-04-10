@@ -28,9 +28,8 @@ function Layout() {
     <>
       <Modal/>
       <Navigation isLoaded={isLoaded} />
-      {isLoaded && <Outlet />}
+        {isLoaded && <Outlet />}
       <Footer/>
-
     </>
   );
 }
