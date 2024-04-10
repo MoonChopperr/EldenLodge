@@ -20,13 +20,6 @@
 .Review-form {
     border: solid gray;
     padding: 30px;
-    width: 500px;
-    /* margin-right: 1000px !important; */
-    margin-left: -120px;
-    /* display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column; */
 }
 
 .review-textarea{
