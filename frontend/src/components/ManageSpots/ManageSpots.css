@@ -27,13 +27,6 @@ margin-left: 30px;
 
 }
 
-.Nav-container {
-    width: 100%;
-    background-color: goldenrod;
-    color: white;
-    transition: box-shadow 0.3s ease;
-    border-radius: 9px;
-}
 
 .MG-Nav-container{
    text-decoration: none;

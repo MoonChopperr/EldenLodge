@@ -1,0 +1,28 @@
+.footer {
+    background-color: goldenrod;
+    margin-top: 200px;
+    width: 50%;
+    position: absolute;
+    left:25%;
+    background: linear-gradient(
+        to left,
+        rgba(255, 255, 255, 0) 0%,
+        goldenrod 10%,
+        goldenrod 90%,
+        rgba(255, 255, 255, 0) 100%
+      );}
+
+.footer-links {
+    display: flex;
+    justify-content: space-around;
+}
+
+.footer-links a {
+    color: #333;
+    text-decoration: none;
+    margin-right: 15px;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}

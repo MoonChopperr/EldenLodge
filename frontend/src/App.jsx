@@ -12,6 +12,7 @@ import CreateSpot from './components/CreateSpot/CreateSpot';
 import ManageSpots from './components/ManageSpots/ManageSpots';
 import UpdateSpot from './components/UpdateSpot/UpdateSpot';
 // import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import Footer from './components/Footer/Footer';
 
 function Layout() {
   const dispatch = useDispatch();
@@ -27,7 +28,8 @@ function Layout() {
     <>
       <Modal/>
       <Navigation isLoaded={isLoaded} />
-      {isLoaded && <Outlet />}
+        {isLoaded && <Outlet />}
+      <Footer/>
     </>
   );
 }
