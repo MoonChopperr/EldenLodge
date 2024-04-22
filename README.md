@@ -1,3 +1,6 @@
+# Hosted on [![Render](https://img.shields.io/badge/Render-Deployed-blue?style=for-the-badge&logo=render)](https://ground-dnd.onrender.com/)
+
+
 ## API Documentation
 
 ## USER AUTHENTICATION/AUTHORIZATION
